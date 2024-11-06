@@ -15,9 +15,8 @@ npm install -g pnpm
 ### 2. Clone the Project
 Clone the repository from Git:
 ```bash
-git clone <repository-url>
+git clone https://github.com/mer6rk/IoT-Stock.git
 ```
-> Note: Replace `<repository-url>` with your actual repository URL
 
 ### 3. Navigate to Backend
 ```bash
