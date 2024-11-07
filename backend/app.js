@@ -34,7 +34,6 @@ app.get('/', (req, res) => {
 // ** Routes ** //
 app.use('/api/v1/IoT-boxes', box_router);
 
-
 const port = process.env.PORT || 3000;
 
 try {
