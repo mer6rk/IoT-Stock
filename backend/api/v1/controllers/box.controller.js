@@ -110,8 +110,60 @@ const create_boxes = (async (req, res) => {
     }
 });
 
+const update_box = (async (req, res) => {
+
+    try {
+
+        const box_id = req.params.id;
+        const { name, serial_number, location, status} = req.body;
+
+        if (!Number.isInteger(Number(box_id))) {
+            return res.status(400).json({
+                error: `Invalid ID.`
+            });
+        }
+
+        if (
+            typeof name !== 'string' ||
+            typeof serial_number !== 'string' ||
+            typeof location !== 'string' ||
+            typeof status !== 'string'
+        ) {
+            return res.status(400).json({
+                error: `Invalid IoT box data. All fields must be strings.`
+            });
+        }
+
+        const [update] = await pool.query(
+            `
+               UPDATE boxes SET name = ?, serial_number = ?, location = ?, status = ?
+               WHERE id = ? 
+            `,
+            [name, serial_number, location, status, box_id]
+        );
+
+        if (update.affectedRows === 0) {
+            console.error(`> [ERROR] Failed to update data of IoT box with ID ${box_id} cause not found.`);
+            return res.status(404).json({
+                error: `IoT box with ID ${box_id} not found.`
+            });
+        }
+
+        return res.status(200).json({
+            message: `IoT box data with ID ${box_id} successfully updated.`
+        });
+
+    } catch (e) {
+        console.error(`> [ERROR] Failed to update IoT box with ID ${box_id} data cause:`, e.message);        
+        return res.status(500).json({
+            error: `Internal Server Error.`
+        });
+    }
+});
+
 module.exports = {
     get_boxes,
     get_single_box,
-    create_boxes
+    create_boxes,
+    update_box
 };
