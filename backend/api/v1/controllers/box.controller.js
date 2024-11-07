@@ -35,7 +35,12 @@ const get_single_box = (async (req, res) => {
             });
         }
 
-        const [data] = await pool.query(`SELECT * FROM boxes WHERE id = ?`, [box_id]);
+        const [data] = await pool.query(
+            `
+                SELECT * FROM boxes 
+                WHERE id = ?
+            `, [box_id]
+        );
 
         if (data.length === 0) {
             return res.status(404).json({
@@ -161,9 +166,49 @@ const update_box = (async (req, res) => {
     }
 });
 
+const delete_box = (async (req, res) => {
+
+    try {
+
+        const box_id = req.params.id;
+
+        if (!Number.isInteger(Number(box_id))) {
+            return res.status(400).json({
+                error: `Invalid ID.`
+            });
+        }
+
+        const [del] = await pool.query(
+            `
+                DELETE FROM boxes 
+                WHERE id = ? 
+            `,
+            [box_id]
+        );
+
+        if (del.affectedRows === 0) {
+            console.error(`> [ERROR] Failed to delete IoT box with ID ${box_id} cause not found.`);
+            return res.status(404).json({
+                error: `IoT box with ID ${box_id} not found.`
+            });
+        }
+
+        return res.status(200).json({
+            message: `IoT box data with ID ${box_id} successfully deleted.`
+        });
+
+    } catch (e) {
+        console.error(`> [ERROR] Failed to delete IoT box with ID ${box_id} cause:`, e.message);        
+        return res.status(500).json({
+            error: `Internal Server Error.`
+        });
+    }
+});
+
 module.exports = {
     get_boxes,
     get_single_box,
     create_boxes,
-    update_box
+    update_box,
+    delete_box
 };
