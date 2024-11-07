@@ -15,7 +15,8 @@ const connect_db = async () => {
         return pool;
 
     } catch (e) {
-        return console.error(`> [ERROR] Failed to connect database cause:`, e.message);
+        console.error(`> [ERROR] Failed to connect database cause:`, e.sqlMessage || e.code || e.message);
+        process.exit(1);
     }
 };
 
